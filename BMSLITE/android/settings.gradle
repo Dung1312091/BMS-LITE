@@ -1,0 +1,3 @@
+rootProject.name = 'BMSLITE'
+
+include ':app'

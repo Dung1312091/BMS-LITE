@@ -1,0 +1,275 @@
+[
+    {
+      "tripDates": [
+        {
+          "bookedQty": 6,
+          "totalQty": 8
+        },
+        {
+          "bookedQty": 8,
+          "totalQty": 8
+        },
+        {
+          "bookedQty": 2,
+          "totalQty": 8
+        }
+      ],
+      "tripTime": "06:00"
+    },
+    {
+      "tripDates": [
+        {
+          "bookedQty": 3,
+          "totalQty": 9
+        },
+        {
+          "bookedQty": 4,
+          "totalQty": 9
+        },
+        {
+          "bookedQty": 2,
+          "totalQty": 9
+        }
+      ],
+      "tripTime": "07:00"
+    },
+    {
+      "tripDates": [
+        {
+          "bookedQty": 6,
+          "totalQty": 8
+        },
+        {
+          "bookedQty": 4,
+          "totalQty": 8
+        },
+        {
+          "bookedQty": 2,
+          "totalQty": 8
+        }
+      ],
+      "tripTime": "08:00"
+    },
+    {
+      "tripDates": [
+        {
+          "bookedQty": 8,
+          "totalQty": 9
+        },
+        {
+          "bookedQty": 4,
+          "totalQty": 9
+        },
+        {
+          "bookedQty": 2,
+          "totalQty": 9
+        }
+      ],
+      "tripTime": "11:00"
+    },
+    {
+      "tripDates": [
+        {
+          "bookedQty": 6,
+          "totalQty": 8
+        },
+        {
+          "bookedQty": 4,
+          "totalQty": 8
+        },
+        {
+          "bookedQty": 2,
+          "totalQty": 8
+        }
+      ],
+      "tripTime": "12:00"
+    },
+    {
+      "tripDates": [
+        {
+          "bookedQty": 3,
+          "totalQty": 9
+        },
+        {
+          "bookedQty": 4,
+          "totalQty": 9
+        },
+        {
+          "bookedQty": 2,
+          "totalQty": 9
+        }
+      ],
+      "tripTime": "13:00"
+    },
+    {
+      "tripDates": [
+        {
+          "bookedQty": 6,
+          "totalQty": 8
+        },
+        {
+          "bookedQty": 4,
+          "totalQty": 8
+        },
+        {
+          "bookedQty": 2,
+          "totalQty": 8
+        }
+      ],
+      "tripTime": "14:00"
+    },
+    {
+      "tripDates": [
+        {
+          "bookedQty": 8,
+          "totalQty": 9
+        },
+        {
+          "bookedQty": 4,
+          "totalQty": 9
+        },
+        {
+          "bookedQty": 2,
+          "totalQty": 9
+        }
+      ],
+      "tripTime": "15:00"
+    },
+    {
+      "tripDates": [
+        {
+          "bookedQty": 6,
+          "totalQty": 8
+        },
+        {
+          "bookedQty": 4,
+          "totalQty": 8
+        },
+        {
+          "bookedQty": 2,
+          "totalQty": 8
+        }
+      ],
+      "tripTime": "16:00"
+    },
+    {
+      "tripDates": [
+        {
+          "bookedQty": 3,
+          "totalQty": 9
+        },
+        {
+          "bookedQty": 4,
+          "totalQty": 9
+        },
+        {
+          "bookedQty": 2,
+          "totalQty": 9
+        }
+      ],
+      "tripTime": "17:00"
+    },
+    {
+      "tripDates": [
+        {
+          "bookedQty": 6,
+          "totalQty": 8
+        },
+        {
+          "bookedQty": 4,
+          "totalQty": 8
+        },
+        {
+          "bookedQty": 2,
+          "totalQty": 8
+        }
+      ],
+      "tripTime": "18:00"
+    },
+    {
+      "tripDates": [
+        {
+          "bookedQty": 8,
+          "totalQty": 9
+        },
+        {
+          "bookedQty": 4,
+          "totalQty": 9
+        },
+        {
+          "bookedQty": 2,
+          "totalQty": 9
+        }
+      ],
+      "tripTime": "19:00"
+    },
+    {
+      "tripDates": [
+        {
+          "bookedQty": 6,
+          "totalQty": 8
+        },
+        {
+          "bookedQty": 4,
+          "totalQty": 8
+        },
+        {
+          "bookedQty": 2,
+          "totalQty": 8
+        }
+      ],
+      "tripTime": "20:00"
+    },
+    {
+      "tripDates": [
+        {
+          "bookedQty": 3,
+          "totalQty": 9
+        },
+        {
+          "bookedQty": 4,
+          "totalQty": 9
+        },
+        {
+          "bookedQty": 2,
+          "totalQty": 9
+        }
+      ],
+      "tripTime": "21:00"
+    },
+    {
+      "tripDates": [
+        {
+          "bookedQty": 6,
+          "totalQty": 8
+        },
+        {
+          "bookedQty": 4,
+          "totalQty": 8
+        },
+        {
+          "bookedQty": 2,
+          "totalQty": 8
+        }
+      ],
+      "tripTime": "22:00"
+    },
+    {
+      "tripDates": [
+        {
+          "bookedQty": 8,
+          "totalQty": 9
+        },
+        {
+          "bookedQty": 4,
+          "totalQty": 9
+        },
+        {
+          "bookedQty": 2,
+          "totalQty": 9
+        }
+      ],
+      "tripTime": "23:00"
+    }
+  ]
+  
