@@ -31,9 +31,6 @@ class PriceConfigOverview extends Component {
         </Grid>);
     });
   }
- componentDidMount() {
-   console.log('bbbb');
- }
   render() {
     const {
       containerStyle,

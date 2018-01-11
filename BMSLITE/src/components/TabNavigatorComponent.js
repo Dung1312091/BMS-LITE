@@ -13,14 +13,11 @@ class TabNavigatorComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = ({
-            selectedTab: 'ticketSchedule'
+            selectedTab: this.props.selectedTab
         });
     }
-    componentWillReceiveProps(props) {
-        console.log('props=======>', props);
-    }
     render() {
-        console.log('TabNavigatorComponent');
+        // console.log('TabNavigatorComponent');
         const { TabList } = this.props;
         const getComp = (component, props) => {
             const Comp = component;

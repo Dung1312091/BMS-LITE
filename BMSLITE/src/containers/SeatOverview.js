@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
-import { Content, Text, Grid, Col } from 'native-base';
-
+import { View, AsyncStorage } from 'react-native';
+import { Content, Text, Grid, Col, Button, CheckBox } from 'native-base';
+import { connect } from 'react-redux';
 import sampleTripData from '../utils/sample_trip.json';
-
+import { getTrips } from '../actions/getTrips';
+const ACCESS_TOKEN = 'access_token';
 class SeatOverview extends Component {
+  constructor(props) {
+    super(props);
+  }
   static calculateSeatStyle({ bookedQty, totalQty }) {
     const style = {
       backgroundColor: 'red',
@@ -38,32 +42,37 @@ class SeatOverview extends Component {
         <Col key={id} style={columnStyle}>
           <View style={[seatOccupancyStyle, SeatOverview.calculateSeatStyle(trip)]} />
           <Text style={columnTextStyle}>{trip.bookedQty}/{trip.totalQty} chỗ</Text>
+          <Text style={columnTextStyle}>200k/10%</Text>
         </Col>
       );
+    });
+  }
+  onPress = (item) => {
+    console.log(item);
+    this.setState(previousState => {
+      return {
+        checked: !previousState.checked,
+      };
     });
   }
 
   renderDataGrid() {
     const { columnStyle, columnTextStyle } = styles;
 
-    return sampleTripData.map((item) => {
+    return sampleTripData.map((item, index) => {
+
       return (
         <Grid key={item.tripTime}>
           <Col style={columnStyle}>
-            <Text style={columnTextStyle}>{item.tripTime}</Text>
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={columnTextStyle}>{item.tripTime}</Text>
+            </View>
           </Col>
           {this.renderSeat(item.tripDates)}
         </Grid>);
     });
   }
-  componentWillMount() {
-    console.log('SeatOverview run==>');
-}
-  componentDidMount() {
-    console.log('aaa');
-  }
   render() {
-      console.log('bat dau render');
     const {
       containerStyle,
       tableStyle,
@@ -93,6 +102,14 @@ class SeatOverview extends Component {
         <Content>
           {this.renderDataGrid()}
         </Content>
+        <View style={[styles.rowButtonStyle, { display: 'none' }]}>
+          <Button style={styles.buttonStyle}>
+            <Text>Thay đổi chuyến</Text>
+          </Button>
+          <Button>
+            <Text>Hủy chuyến</Text>
+          </Button>
+        </View>
       </View>
     );
   }
@@ -117,6 +134,7 @@ const styles = {
   headerTextStyle: {
     fontSize: 12,
     fontWeight: '500',
+    color: '#7E7E7E'
   },
   columnStyle: {
     height: 50,
@@ -137,6 +155,28 @@ const styles = {
     left: 0,
     bottom: 0,
   },
+  rowButtonStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  buttonStyle: {
+    marginRight: 20
+  }
+};
+const mapStateToProps = (state) => {
+  return {
+    responeLogin: state.loginReducers,
+    responeGetTrips: state.getTripReducers,
+    responeGetDay: state.getDayReducers
+  }
 };
 
-export default SeatOverview;
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     getTrips: (params) => {
+//           dispatch(getTrips(params));
+//       }
+//   };
+// }
+export default connect(mapStateToProps, null)(SeatOverview);

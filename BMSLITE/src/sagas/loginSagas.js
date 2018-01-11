@@ -1,16 +1,89 @@
-import { LOGIN, LOGIN_SUCCESS, LOGIN_FAIL} from '../actions/actionTypes';
+import { LOGIN, LOGIN_SUCCESS, LOGIN_FAIL, AUTHENTICATION_SUCCESS, AUTHENTICATION_FAIL, AUTHENTICATION} from '../actions/actionTypes';
+import { Api } from '../utils/loginApi';
+// import {AsyncStorage} from 'react-native';
 //Saga effects
+import {storeToken, getToken} from '../utils/AsyncStorage';
 import { put, takeLatest,call  } from 'redux-saga/effects';
-function* LoginSagas(action) {
+const ACCESS_TOKEN = 'access_token';
+const REFRESH_TOKEN = 'refresh_token';
+function*  LoginSagas(action) {
+    var trip = null;
     try {
-        console.log('action===>',action);
-        // const respone = yield Api.getMoviesFromApi();  
-        yield put({ type: LOGIN_SUCCESS, account: action.account });     
-    } catch (error) {        
-        yield put({ type: LOGIN_FAIL, account: false });
+        const respone = yield Api.Login( action.params); 
+        let token =  JSON.parse(respone._bodyInit);
+        if (token && token.access_token) {
+            yield storeToken(ACCESS_TOKEN,token.access_token);
+            yield storeToken(REFRESH_TOKEN,token.refresh_token);
+            let user = yield Api.CallAPI('https://api-sandbox.vexere.com/v1/', 'user', 'GET', {access_token: token.access_token});
+            if (user.status === 200) {
+                let data = JSON.parse(user._bodyInit);
+                let params = {
+                    access_token: token.access_token,
+                    comp_id: data.data.CompId,
+                    date: action.params.date,
+                    fields: 'Id,Type,Name,RouteInfo,IsPrgStatus,Info,SeatTemplateInfo,FromArea,ToArea'
+                }
+                trip = yield Api.CallAPI('https://api-sandbox.vexere.com/v1/', 'trip/get_trips', 'GET', params);
+                if (trip.status === 200) {
+                    yield put({ type: LOGIN_SUCCESS, data: {
+                        username: action.params.username,
+                        trip: trip
+                    } }); 
+                }
+                
+                
+            }
+        }
+        else {
+            yield put({ type: LOGIN_FAIL, error});
+        }
+       
+        // yield put({ type: USER, data: token }); 
+        // let tk = yield getToken();
+        // console.warn('tk = ', tk);
+    } catch (error) {  
+        console.log('loi');      
+        yield put({ type: LOGIN_FAIL, error});
+    }
+}
+function * Authentication(action) {
+    const token =  yield getToken(ACCESS_TOKEN);
+    // console.warn('pass qua token');
+    if (token) {
+        user = yield Api.CallAPI('https://api-sandbox.vexere.com/v1/', 'user', 'GET', {access_token: token});
+        let data = JSON.parse(user._bodyInit);
+        if (user.status === 400) {
+            yield put ({
+                   type: AUTHENTICATION_FAIL, 
+               })
+        }
+        else if (user.status === 200) {
+            let params = {
+                access_token: token,
+                comp_id: data.data.CompId,
+                date: action.date,
+                fields: 'Id,Type,Name,RouteInfo,IsPrgStatus,Info,SeatTemplateInfo,FromArea,ToArea'
+            }
+            let trip = yield Api.CallAPI('https://api-sandbox.vexere.com/v1/', 'trip/get_trips', 'GET', params);
+            if (trip.status === 200) {
+                yield put (
+                    {
+                       type: AUTHENTICATION_SUCCESS, 
+                       token: token,
+                       trip: trip
+                   })
+            }
+            
+        }
+    }
+    else {
+        yield put (
+         {
+            type: AUTHENTICATION_FAIL, 
+        })
     }
 }
 export function* watchLoginSagas() { 
-    console.log('eo chay la sao bay');
     yield takeLatest (LOGIN, LoginSagas);
+    yield takeLatest (AUTHENTICATION, Authentication);
 }

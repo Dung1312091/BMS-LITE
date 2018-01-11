@@ -3,8 +3,6 @@ import { StyleSheet, View, Image, Text } from 'react-native';
 import { Header, Left, Right, Button, Icon, Title, Body } from 'native-base';
 class HeaderComponent extends React.Component {
     render() {
-        console.log('HeaderComponent', this.props);
-        
         return (
             <Header>
                 <Left >

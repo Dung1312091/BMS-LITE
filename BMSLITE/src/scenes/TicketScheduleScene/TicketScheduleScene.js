@@ -1,11 +1,16 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Vibration } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Vibration, AsyncStorage } from 'react-native';
 import {
-    Container, Body, Title, Left, Right, Button, Icon, Tabs, Tab, Header,
+    Container, Body, Title, Left, Right, Button, Icon, Tabs, Tab, Header, Grid, Col,
 } from 'native-base';
 import DateFilterSection from '../../containers/DateFilterSection';
+import VxrDateRangePicker from '../../components/VxrDateRangePicker';
 import SeatOverview from '../../containers/SeatOverview';
 import PriceConfigOverview from '../../containers/PriceConfigOverview';
+import { getTrips } from '../../actions/getTrips';
+import Dropdown from '../../components/Dropdown';
+import { connect } from 'react-redux';
+const ACCESS_TOKEN = 'access_token';
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -32,11 +37,20 @@ const styles = StyleSheet.create({
 });
 
 class TicketScheduleScene extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = ({
+            ListViewArea: []
+        });
+    }
     componentWillMount() {
-
+        let get_trip = this.props.responeLogin.trip._bodyInit;
+        let trip = JSON.parse(get_trip);
+        this.setState({
+            ListViewArea: trip.data
+        });
     }
     render() {
-        console.log('TicketScheduleScene');
         return (
             <Container>
                 <Header>
@@ -54,20 +68,21 @@ class TicketScheduleScene extends React.Component {
                         </Button>
                     </Right>
                 </Header>
-                <DateFilterSection />
-                <Tabs initialPage={0}>
-                    <Tab heading="Chỗ mở bán" style={styles.tabHeader}>
-                        {/* <SeatOverview /> */}
-                        
-                    </Tab>
-                    <Tab heading="Giá vé">
-                        <PriceConfigOverview />
-                    </Tab>
-                </Tabs>
+                <Grid style={{ padding: '1%', flex: 0 }}>
+                    <Col style={{ margin: '1%', flex: 1 }}><Dropdown data={this.state.ListViewArea} defaultIndex={0} defaultValue={this.state.ListViewArea[0]} /></Col>
+                    <Col style={{ margin: '1%', flex: 1 }}><VxrDateRangePicker /></Col>
+                </Grid>
+
+                <SeatOverview />
             </Container>
 
         );
     }
 }
+const mapStateToProps = (state) => {
+    return {
+        responeLogin: state.loginReducers
+    }
+};
 
-export default TicketScheduleScene;
+export default connect(mapStateToProps, null)(TicketScheduleScene);

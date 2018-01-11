@@ -1,60 +1,11 @@
 import React, { Component } from 'react';
 import { Text, View, TouchableOpacity } from 'react-native';
+import { connect } from 'react-redux';
 import { Icon } from 'native-base';
 import VxrDateRangePicker from '../components/VxrDateRangePicker';
-
-class DateFilterSection extends Component {
-  constructor() {
-    super();
-    this.state = {
-      datePickerVisible: false,
-    };
-  }
-
-  onDateSelected(date) {
-    this.setState({ datePickerVisible: !this.state.datePickerVisible });
-    console.log(date);
-  }
-
-  onSelectDate() {
-    this.setState({ datePickerVisible: !this.state.datePickerVisible });
-  }
-
-  render() {
-    const {
-      containerStyle,
-      blockStyle,
-      iconStyle,
-      dateGroupItemContainer,
-      dateGroupItem,
-    } = styles;
-
-    return (
-      <View style={containerStyle}>
-        <TouchableOpacity
-          onPress={() => this.onSelectDate()}
-          style={[dateGroupItemContainer, blockStyle]}
-        >
-          <Icon name="md-calendar" style={[dateGroupItem, iconStyle]} />
-          <Text style={dateGroupItem}>26-28/10/2017</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={dateGroupItemContainer}>
-          <Text style={dateGroupItem}>Hôm nay</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={dateGroupItemContainer}>
-          <Text style={dateGroupItem}>Tiếp theo</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={dateGroupItemContainer}>
-          <Text style={dateGroupItem}>Trước</Text>
-        </TouchableOpacity>
-        <VxrDateRangePicker
-          visible={this.state.datePickerVisible}
-          onDateSelected={() => this.onDateSelected()}
-        />
-      </View>
-    );
-  }
-}
+import Dropdown from '../components/Dropdown';
+import {getToday, nextDay} from '../actions/getDay';
+import moment from 'moment';
 const styles = {
   iconStyle: {
     fontSize: 22,
@@ -66,6 +17,7 @@ const styles = {
     flexDirection: 'row',
     alignSelf: 'stretch',
     backgroundColor: '#fff',
+    flex: 0.1
   },
   dateGroupItemContainer: {
     paddingTop: 12,
@@ -87,5 +39,39 @@ const styles = {
     
   },
 };
-
-export default DateFilterSection;
+class DateFilterSection extends Component {
+  constructor() {
+    super();
+    this.state = {
+      CurrentDay: null,
+    };
+  }
+  componentWillMount() {
+    this.props.getToday();
+  }
+  render() {
+    const {
+      containerStyle,
+      blockStyle,
+      iconStyle,
+      dateGroupItemContainer,
+      dateGroupItem,
+    } = styles;
+    return (
+        <VxrDateRangePicker />
+    );
+  }
+}
+const mapStateToProps = (state) => {
+  return {
+      isDate: state.getDayReducers
+  }
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getToday: () => {
+          dispatch(getToday());
+      }
+  };
+}
+export default connect(null,mapDispatchToProps)(DateFilterSection);
