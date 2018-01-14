@@ -3,14 +3,13 @@ import { View, AsyncStorage } from 'react-native';
 import { Content, Text, Grid, Col, Button, CheckBox } from 'native-base';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import sampleTripData from '../utils/sample_trip.json';
-import { getTrips } from '../actions/getTrips';
+import { getConfigurationOverview } from '../actions/ConfigurationOverview';
 const ACCESS_TOKEN = 'access_token';
 class SeatOverview extends Component {
   constructor(props) {
     super(props);
   }
-  static calculateSeatStyle({ bookedQty, totalQty }) {
+  static calculateSeatStyle(bookedQty, totalQty ) {
     const style = {
       backgroundColor: 'red',
       width: '50%',
@@ -32,6 +31,23 @@ class SeatOverview extends Component {
     // console.log(style);
     return style;
   }
+  componentWillMount() {
+    let fromDate = moment(this.props.responeGetDay, 'DD-MM-YYYY').format('YYYY-MM-DD');
+    let toDate = this.converDate(fromDate, 3);
+    let get_trip = this.props.responeLogin.trip._bodyInit;
+    let user = this.props.responeLogin.user;
+    let token = this.props.responeLogin.token;
+    let trip = JSON.parse(get_trip);
+    let params = {
+      access_token: token,
+      company_id: user.data.CompId,
+      route_id: trip.data[0][0],
+      from_date: fromDate,
+      to_date: toDate,
+      groups: 'selling_configs,fare_configs,statistic'
+    }
+    this.props.getConfigurationOverview(params);
+  }
   onPress = (item) => {
     console.log(item);
     this.setState(previousState => {
@@ -39,25 +55,6 @@ class SeatOverview extends Component {
         checked: !previousState.checked,
       };
     });
-  }
-
-  renderDataGrid = (dates) => {
-    const { columnStyle, columnTextStyle } = styles;
-    let times = dates[0].times;
-    let result = null;
-    result = times.map((item, index) => {
-      return (
-        <Grid key={index}>
-          <Col style={columnStyle}>
-            <View style={{ flexDirection: 'row' }}>
-              <Text style={columnTextStyle}>{item.time}</Text>
-            </View>
-          </Col>
-          {this.renderSeat(dates)}
-        </Grid>
-      );
-    });
-    return result;
   }
   converDate = (date, day) => {
     let Date = moment(date).utc();
@@ -110,9 +107,92 @@ class SeatOverview extends Component {
     }
     return result;
   }
+  renderSeat(data) {
+    const { columnStyle, columnTextStyle, seatOccupancyStyle } = styles;
+    let total = null;
+    let booking = null;
+    return data.map((trip, i) => {
+     if (trip && trip.configCustom) {
+      total =  trip.configCustom.selling_configs.selling_configs[2].total;
+      booking = trip.configCustom.statistic ? trip.configCustom.statistic : 0;
+     }
+      const id = i; // trip.id
+      if (trip.isShow) {
+        return (
+          <Col key={id} style={columnStyle}>
+            <View style={[seatOccupancyStyle, SeatOverview.calculateSeatStyle(6,total)]} />
+            <Text style={columnTextStyle}>{booking}/{total} chỗ</Text>
+            
+          </Col>
+        );
+      }
+      else {
+        return (
+          <Col key={id} style={columnStyle}>
+            {/* <View style={[seatOccupancyStyle, SeatOverview.calculateSeatStyle(trip)]} />
+            <Text style={columnTextStyle}>{trip.bookedQty}/{trip.totalQty} chỗ</Text> */}
+            {/* <Text>AAAA</Text> */}
+          </Col>
+        );
+      }
+    });
+  }
+  renderDataGrid(data) {
+    const { columnStyle, columnTextStyle } = styles;
+
+    return data.map((item, index) => {
+      return (
+        <Grid key={index}>
+          <Col style={columnStyle}>
+            <Text style={columnTextStyle}>{item.time}</Text>
+          </Col>
+          {this.renderSeat(item.data)}
+        </Grid>);
+    });
+  }
+  converDate = (date, day) => {
+    let Date = moment(date).utc();
+    let tomorrow = Date.add(day, 'days');
+    let tomorrowDate = moment(tomorrow).format("YYYY-MM-DD");
+    return tomorrowDate;
+  }
+  setUpTimeData = (data) => {
+    let result = data[0].times.length;
+    data.forEach((item) => {
+       if (item.times.length > result) {
+        result = item;
+       }
+    });
+    return result;
+  }
+  setUpAllDataToRender = (times, dates) => {
+    let result = [];
+    times.times.forEach((time, i) => {
+      let data = [];
+      dates.forEach((date,j) => {
+        let type = {};
+        let arrTemp = [];
+        date.times.forEach((item, k) => {
+          if (item.time === time.time) {
+            type.isShow = true;
+            type.configCustom = item.configs;
+
+            isTrue = true;
+          }
+        });
+        data.push(type);
+      });
+      time.data = data;
+      result.push(time);
+    });
+    return result;
+  }
   render() {
-    if (Object.keys(this.props.seatOverview).length > 0) {
-      var trip_overview = this.props.seatOverview.data.trip_overview;
+    let response = this.props.responeGetConfigurationOverview;
+    if (Object.keys(response).length > 0) {
+      var trip_overview = response.data.trip_overview.dates;
+      var result = this.setUpTimeData(trip_overview);
+      var data = this.setUpAllDataToRender(result,trip_overview);
     }
     var dates = moment(this.props.responeGetDay, 'DD-MM-YYYY').format('YYYY-MM-DD');
     var times = dates.times;
@@ -125,7 +205,6 @@ class SeatOverview extends Component {
       columnHeader,
       headerTextStyle,
     } = styles;
-
     return (
       <View style={containerStyle}>
         <Grid style={tableStyle}>
@@ -135,7 +214,7 @@ class SeatOverview extends Component {
           {ListDates ? this.renderHeadTable(ListDates) : null}
         </Grid>
         <Content>
-          {/* {dates ? this.renderDataGrid(dates) : null} */}
+          {data ? this.renderDataGrid(data) : null}
         </Content>
       </View>
     );
@@ -194,16 +273,15 @@ const styles = {
 const mapStateToProps = (state) => {
   return {
     responeLogin: state.loginReducers,
-    responeGetTrips: state.getTripReducers,
-    responeGetDay: state.getDayReducers
+    responeGetDay: state.getDayReducers,
+    responeGetConfigurationOverview: state.getConfigurationOverview
   }
 };
-
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     getTrips: (params) => {
-//           dispatch(getTrips(params));
-//       }
-//   };
-// }
-export default connect(mapStateToProps, null)(SeatOverview);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getConfigurationOverview: (params) => {
+      dispatch(getConfigurationOverview(params));
+    }
+  };
+}
+export default connect(mapStateToProps, mapDispatchToProps)(SeatOverview);

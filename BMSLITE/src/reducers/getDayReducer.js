@@ -9,8 +9,8 @@ const getDayReducers = (state = initialState, action) => {
         case GET_TODAY:
             return  (state.day = moment(day).format("DD-MM-YYYY")); 
         case SELECT_TODAY: {
-            // console.log('acton.date==.',action.date)
-            return action.date; 
+            
+            return (state.day = moment(action.date).format("DD-MM-YYYY"));
         }
         default:
             return state;

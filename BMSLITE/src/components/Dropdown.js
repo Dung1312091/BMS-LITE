@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { Text, View, TouchableHighlight, ListView, ScrollView } from 'react-native';
 import { Icon } from 'native-base';
+import { connect } from 'react-redux';
 import ModalDropdown from 'react-native-modal-dropdown';
 class Dropdown extends Component {
   constructor(props) {
     super();
     this.state = {
-      selectedItem: {}
+      selectedItem: {},
+      data: {}
     };
   }
   onDropdownSelect(index, value) {
@@ -15,7 +17,6 @@ class Dropdown extends Component {
       selectedItem: { id: index, value: value }
     });
   }
-
 
   renderRow(rowData,rowID, highlighted) {
     return (
@@ -29,26 +30,21 @@ class Dropdown extends Component {
     );
   }
   componentWillMount() {
-    const { defaultIndex, defaultValue, user } = this.props;
-    if (defaultValue) {
+      let get_trip = this.props.responeLogin.trip._bodyInit;
+      let trip = JSON.parse(get_trip);
+      console.log(trip);
       this.setState({
-        selectedItem: { id: defaultIndex, value: defaultValue },
+        selectedItem: { id: 1, value: trip.data[0] },
+        data: trip.data
       });
-    } else {
-      this.setState({
-        selectedItem: { id: -1, value: 'Tùy chọn...' },
-      });
-
-    }
   }
   render() {
-    const { data } = this.props;
     return (
       <ModalDropdown
         style={styles.containerStyle}
         dropdownStyle={styles.dropdownStyle}
         dropdownTextStyle={styles.dropdownTextStyle}
-        options={data}
+        options = {this.state.data}
         animated={false}
         renderRow={(rowData, rowID, highlighted) => this.renderRow(rowData, rowID, highlighted)}
         onSelect={(idx, value) => this.onDropdownSelect(idx, value)}
@@ -95,5 +91,9 @@ const styles = {
     backgroundColor: '#ccc',
   },
 };
-
-export default Dropdown;
+const mapStateToProps = (state) => {
+  return {
+    responeLogin: state.loginReducers
+  }
+};
+export default connect(mapStateToProps, null)(Dropdown);

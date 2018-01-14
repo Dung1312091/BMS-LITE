@@ -10,6 +10,7 @@ function*  LoginSagas(action) {
     var trip = null;
     try {
         const respone = yield Api.Login( action.params); 
+        console.log('respone login-->',respone);
         let token =  JSON.parse(respone._bodyInit);
         if (token && token.access_token) {
             yield storeToken(ACCESS_TOKEN,token.access_token);
