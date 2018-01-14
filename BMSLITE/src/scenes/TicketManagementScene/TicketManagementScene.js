@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-
+import ModalDropdown from 'react-native-modal-dropdown';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -26,6 +26,9 @@ class TicketManagementScene extends React.Component {
               <Text style={styles.welcome}>
               TicketManagementScene
               </Text>
+              <ModalDropdown options = {['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1']}>
+
+              </ModalDropdown>
            </View>
 );
 }

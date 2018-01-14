@@ -1,4 +1,5 @@
 import React from 'react';
+import AnimatedHideView from 'react-native-animated-hide-view';
 import PropTypes from 'prop-types';
 import { Actions } from 'react-native-router-flux';
 import { connect } from 'react-redux';
@@ -130,6 +131,7 @@ class LoginScreen extends React.Component {
         var { username, password, animate, loginFail, isLoading, run } = this.state;
         var loading = animate ? <Spinner color='red' /> : null;
         var loginErr = loginFail ? <Text style={{ color: 'red' }} >Tài khoản chỉ gồm các ký tự 0-9, aA-zZ</Text> : null;
+        var duration = 5000;
         return (
             <Container>
                 {/* <View style={[styles.isLoading, isLoading ? '' : styles.opancityLoading]}>
@@ -142,10 +144,10 @@ class LoginScreen extends React.Component {
                             source={require('../../images/logo.png')}
                         />
                     </View>
-                    <View style={styles.loginErr}>
+                    <View style={[styles.loginErr, loginFail ? {backgroundColor: '#BAD2E8'} : {}]} >
                         {loginErr}
                     </View>
-                    {/* <View  > */}
+                    <AnimatedHideView visible = {true}>
                     <View style={styles.SectionStyle}>
                         <View style={styles.inputLogin}>
                             <Image source={require('../../images/user.png')} style={styles.ImageStyle} />
@@ -180,8 +182,8 @@ class LoginScreen extends React.Component {
                         </TouchableOpacity>
                     </View>
                     {/* {loading} */}
+                </AnimatedHideView>
                 </View>
-                {/* </View> */}
             </Container>
         );
     }

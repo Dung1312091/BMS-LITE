@@ -1,9 +1,10 @@
 import { combineReducers } from 'redux';
 import loginReducers from './loginReducer';
 import getDayReducers from './getDayReducer';
-import getTripReducers from './getTripsReducer';
+import getConfigurationOverview from './configurationOverviewReducer';
 const allReducers = combineReducers({
   loginReducers,
-  getDayReducers
+  getDayReducers,
+  getConfigurationOverview
 });
 export default allReducers;

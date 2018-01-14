@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, AsyncStorage } from 'react-native';
 import { Content, Text, Grid, Col, Button, CheckBox } from 'native-base';
 import { connect } from 'react-redux';
+import moment from 'moment';
 import sampleTripData from '../utils/sample_trip.json';
 import { getTrips } from '../actions/getTrips';
 const ACCESS_TOKEN = 'access_token';
@@ -14,7 +15,6 @@ class SeatOverview extends Component {
       backgroundColor: 'red',
       width: '50%',
     };
-
     const w = totalQty > 0
       ? Math.round((bookedQty / totalQty) * 100)
       : 0;
@@ -32,21 +32,6 @@ class SeatOverview extends Component {
     // console.log(style);
     return style;
   }
-
-  renderSeat(dates) {
-    const { columnStyle, columnTextStyle, seatOccupancyStyle } = styles;
-
-    return dates.map((trip, i) => {
-      const id = i; // trip.id
-      return (
-        <Col key={id} style={columnStyle}>
-          <View style={[seatOccupancyStyle, SeatOverview.calculateSeatStyle(trip)]} />
-          <Text style={columnTextStyle}>{trip.bookedQty}/{trip.totalQty} chỗ</Text>
-          <Text style={columnTextStyle}>200k/10%</Text>
-        </Col>
-      );
-    });
-  }
   onPress = (item) => {
     console.log(item);
     this.setState(previousState => {
@@ -56,23 +41,84 @@ class SeatOverview extends Component {
     });
   }
 
-  renderDataGrid() {
+  renderDataGrid = (dates) => {
     const { columnStyle, columnTextStyle } = styles;
-
-    return sampleTripData.map((item, index) => {
-
+    let times = dates[0].times;
+    let result = null;
+    result = times.map((item, index) => {
       return (
-        <Grid key={item.tripTime}>
+        <Grid key={index}>
           <Col style={columnStyle}>
             <View style={{ flexDirection: 'row' }}>
-              <Text style={columnTextStyle}>{item.tripTime}</Text>
+              <Text style={columnTextStyle}>{item.time}</Text>
             </View>
           </Col>
-          {this.renderSeat(item.tripDates)}
-        </Grid>);
+          {this.renderSeat(dates)}
+        </Grid>
+      );
     });
+    return result;
+  }
+  converDate = (date, day) => {
+    let Date = moment(date).utc();
+    let tomorrow = Date.add(day, 'days');
+    let tomorrowDate = moment(tomorrow).format("YYYY-MM-DD");
+    return tomorrowDate;
+  }
+  dayOfWeek = (date) => {
+    var date = moment(date);
+    var dow = date.day();
+    switch (dow) {
+      case 0:
+        return 'Chủ nhật';
+        break;
+      case 1:
+        return 'Thứ 2';
+        break;
+      case 2:
+        return 'Thứ 3';
+        break;
+      case 3:
+        return 'Thứ 4';
+        break;
+      case 4:
+        return 'Thứ 5';
+        break;
+      case 5:
+        return 'Thứ 6';
+        break;
+      case 6:
+        return 'Thứ 7';
+        break;
+      default:
+        break;
+    }
+  }
+  renderHeadTable = (dates) => {
+    const { columnHeader, headerTextStyle } = styles;
+    let result = null;
+    if (dates) {
+      result = dates.map((item, index) => {
+        let date = moment(item, 'YYYY-MM-DD').format('DD/MM');
+        return (
+          <Col style={columnHeader} key={index}>
+            <Text style={headerTextStyle}>{this.dayOfWeek(item)}</Text>
+            <Text style={headerTextStyle}>{date}</Text>
+          </Col>
+        );
+      });
+    }
+    return result;
   }
   render() {
+    if (Object.keys(this.props.seatOverview).length > 0) {
+      var trip_overview = this.props.seatOverview.data.trip_overview;
+    }
+    var dates = moment(this.props.responeGetDay, 'DD-MM-YYYY').format('YYYY-MM-DD');
+    var times = dates.times;
+    let tomorrowDate = this.converDate(dates, 2);
+    let nextTomorrowDate = this.converDate(dates, 3);
+    let ListDates = [dates, tomorrowDate, nextTomorrowDate];
     const {
       containerStyle,
       tableStyle,
@@ -83,33 +129,14 @@ class SeatOverview extends Component {
     return (
       <View style={containerStyle}>
         <Grid style={tableStyle}>
-          <Col style={columnHeader}>
+          {dates ? <Col style={columnHeader}>
             <Text style={headerTextStyle}>CHUYẾN</Text>
-          </Col>
-          <Col style={columnHeader}>
-            <Text style={headerTextStyle}>Thứ 5</Text>
-            <Text style={headerTextStyle}>26/10</Text>
-          </Col>
-          <Col style={columnHeader}>
-            <Text style={headerTextStyle}>Thứ 6</Text>
-            <Text style={headerTextStyle}>27/10</Text>
-          </Col>
-          <Col style={columnHeader}>
-            <Text style={headerTextStyle}>Thứ 7</Text>
-            <Text style={headerTextStyle}>28/10</Text>
-          </Col>
+          </Col> : null}
+          {ListDates ? this.renderHeadTable(ListDates) : null}
         </Grid>
         <Content>
-          {this.renderDataGrid()}
+          {/* {dates ? this.renderDataGrid(dates) : null} */}
         </Content>
-        <View style={[styles.rowButtonStyle, { display: 'none' }]}>
-          <Button style={styles.buttonStyle}>
-            <Text>Thay đổi chuyến</Text>
-          </Button>
-          <Button>
-            <Text>Hủy chuyến</Text>
-          </Button>
-        </View>
       </View>
     );
   }

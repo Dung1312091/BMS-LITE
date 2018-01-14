@@ -2,95 +2,110 @@ import React, { Component } from 'react';
 import { Text, View, Modal, TouchableOpacity, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import { Button, Icon } from 'native-base';
-import DateTimePicker from 'react-native-modal-datetime-picker';
+import Calendar from 'react-native-calendar'
 import moment from 'moment';
-import {selectDay} from '../actions/getDay';
-const styles =  StyleSheet.create ({
-  iconStyle: {
-    fontSize: 22,
-  },
-  blockStyle: {
+import { selectDay } from '../actions/getDay';
+const styles = {
+  container: {
     flex: 1,
+    flexGrow: 1,
+    marginTop: 100,
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    position: 'relative',
   },
-  containerStyle: {
-    flexDirection: 'row',
-    alignSelf: 'stretch',
+  date: {
+    marginTop: 10,
+  },
+  focused: {
+    color: 'blue',
+  },
+  footer: {
     backgroundColor: '#fff',
+    alignSelf: 'stretch',
+    padding: 20,
   },
-  dateGroupItemContainer: {
-    borderColor: '#d9d8dc',
-    borderWidth: 1,
-    borderRightWidth: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+};
+const customStyle = {
+  hasEventCircle: {
+    backgroundColor: 'blue',
   },
-  dateGroupItem: {
-    marginRight: 5,
-    color: '#1365af',
-    fontSize: 13,
-    
+  day: { fontSize: 15, textAlign: 'center', color: 'black' },
+  dayHeading: {
+    color: 'black',
   },
-});
+  hasEventDaySelectedCircle: {
+    backgroundColor: 'red',
+  },
+}
 class VxrDateRangePicker extends Component {
   constructor(props) {
     super(props);
+    let day = moment().format('YYYY-MM-DD');
+    console.warn('isdate', this.props.isDate);
     this.state = ({
-      date: '',
-      isDateTimePickerVisible: false,
+      dateSelected: moment(this.props.isDate, 'DD-MM-YYYY').format('YYYY-MM-DD'),
+      isdate: day
     });
   }
-  _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
- 
-  _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
- 
-  _handleDatePicked = (date) => {
-    var dateObj = moment(date, 'DD/MM/YYYY');
-    var dateFormat = dateObj.format('DD/MM/YYYY');
-    this.props.selectDay(dateFormat);
-    this._hideDateTimePicker();
-  };
-  componentWillMount() {
+  onCloseModal(date) {
+    this.props.onCloseModal(date);
+  }
+  onDateSelect = (date) => {
     this.setState({
-      date: this.props.isDate
+      dateSelected: date
     });
   }
-  componentDidMount() {
-
+  converDate = (date, day) => {
+    let Date = moment(date).utc();
+    let tomorrow = Date.add(day, 'days');
+    let tomorrowDate = moment(tomorrow).format("YYYY-MM-DD");
+    return tomorrowDate;
   }
-  comp
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      date: nextProps.isDate
-    });
-  }
-  render () {
+  render() {
+    let { dateSelected, isdate } = this.state;
+    let tomorrowDate = this.converDate(dateSelected, 2);
+    let nextTomorrowDate = this.converDate(dateSelected, 3);
+    let startDay = moment().format("YYYY-MM-DD");
+    eventDates = [dateSelected, tomorrowDate, nextTomorrowDate];
     return (
-      <View style={{ flex: 1 }}>
-        <TouchableOpacity onPress={this._showDateTimePicker} style={[styles.dateGroupItemContainer, styles.blockStyle]}>
-          <Icon name="md-calendar" style={[styles.dateGroupItem, styles.iconStyle]} />
-          {/* <Text style={styles.dateGroupItem}>26-28/10/2017</Text> */}
-          <Text style={styles.dateGroupItem}>{this.state.date}</Text>
-        </TouchableOpacity>
-        <DateTimePicker
-          isVisible={this.state.isDateTimePickerVisible}
-          onConfirm={this._handleDatePicked}
-          onCancel={this._hideDateTimePicker}
-        />
-      </View>
+      <Modal
+        animationType="fade"
+        transparent
+        visible={this.props.visible}
+        onRequestClose={() => console.log('Modal has been closed.')}
+      >
+        <View style={styles.container}>
+          <Calendar
+
+            showEventIndicators
+            eventDates={eventDates}
+            nextButtonText={'Sau'}
+            prevButtonText={'Trước'}
+            titleFormat={'MMMM YYYY'}
+            showControls
+            onDateSelect={(date) => this.onDateSelect(date)}
+            customStyle={customStyle}
+          />
+          <View style={styles.footer}>
+            <Button block light onPress={() => this.onCloseModal(dateSelected)}>
+              <Text>Đồng ý</Text>
+            </Button>
+          </View>
+        </View>
+      </Modal>
     );
-  } 
+  }
 }
 const mapStateToProps = (state) => {
   return {
-      isDate: state.getDayReducers
+    isDate: state.getDayReducers
   }
 };
-const mapDispatchToProps = (dispatch) => {
-  return {
-      selectDay: (date) => {
-          dispatch(selectDay(date));
-      }
-  };
-}
-export default connect(mapStateToProps,mapDispatchToProps)(VxrDateRangePicker);
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     selectDay: (date) => {
+//       dispatch(selectDay(date));
+//     }
+//   };
+// }
+export default connect(mapStateToProps, null)(VxrDateRangePicker);

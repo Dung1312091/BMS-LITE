@@ -11,7 +11,8 @@ const loginReducers = (state = initialState, action) => {
         case AUTHENTICATION_SUCCESS: {
             state.isAuthentication = true;
             state.token = action.token;
-            state.trip = action.trip
+            state.trip = action.trip,
+            state.user = action.user
             return {
                 ...state
             }
@@ -27,9 +28,10 @@ const loginReducers = (state = initialState, action) => {
             state.username = action.data.username;
             state.isAuthentication =true;
             state.trip = action.data.trip;
+            state.user = action.data.user,
+            state.token = action.data.token.access_token
             return {
                ...state,
-               user: action.data.user
             };
         case LOGIN_FAIL:
             return {

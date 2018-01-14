@@ -26,6 +26,7 @@ class RouterComponent extends React.Component {
   componentWillMount() {
     let date = this.props.isDate;
     this.props.Authentication(date);
+    // deleteToken(ACCESS_TOKEN);
   }
   componentWillReceiveProps(nextProps) {
     if (!nextProps.responeLogin.isAuthentication) {
@@ -42,6 +43,13 @@ class RouterComponent extends React.Component {
     return (
       <Router>
         <Stack key="root" hideNavBar="true">
+        <Scene key="start" hideNavBar="true"  >
+
+            <Scene
+              key="runapp"
+              component={RunAppScene}
+            />
+          </Scene>
           <Scene key="auth" hideNavBar="true"  >
 
             <Scene

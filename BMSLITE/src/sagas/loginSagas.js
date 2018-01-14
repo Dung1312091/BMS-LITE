@@ -24,14 +24,15 @@ function*  LoginSagas(action) {
                     fields: 'Id,Type,Name,RouteInfo,IsPrgStatus,Info,SeatTemplateInfo,FromArea,ToArea'
                 }
                 trip = yield Api.CallAPI('https://api-sandbox.vexere.com/v1/', 'trip/get_trips', 'GET', params);
+                console.log('trip1',trip);
                 if (trip.status === 200) {
                     yield put({ type: LOGIN_SUCCESS, data: {
                         username: action.params.username,
-                        trip: trip
+                        trip: trip,
+                        user: data,
+                        token: token
                     } }); 
                 }
-                
-                
             }
         }
         else {
@@ -65,12 +66,14 @@ function * Authentication(action) {
                 fields: 'Id,Type,Name,RouteInfo,IsPrgStatus,Info,SeatTemplateInfo,FromArea,ToArea'
             }
             let trip = yield Api.CallAPI('https://api-sandbox.vexere.com/v1/', 'trip/get_trips', 'GET', params);
+            console.log('trip',trip);
             if (trip.status === 200) {
                 yield put (
                     {
                        type: AUTHENTICATION_SUCCESS, 
                        token: token,
-                       trip: trip
+                       trip: trip,
+                       user: data
                    })
             }
             

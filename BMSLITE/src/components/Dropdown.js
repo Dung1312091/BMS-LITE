@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, TouchableHighlight, ListView } from 'react-native';
+import { Text, View, TouchableHighlight, ListView, ScrollView } from 'react-native';
 import { Icon } from 'native-base';
 import ModalDropdown from 'react-native-modal-dropdown';
 class Dropdown extends Component {
@@ -17,8 +17,7 @@ class Dropdown extends Component {
   }
 
 
-  renderRow(rowData, highlighted) {
-    // const evenRow = rowID % 2;
+  renderRow(rowData,rowID, highlighted) {
     return (
       <TouchableHighlight>
         <View style={[styles.dropdownRowStyle, highlighted ? styles.highlightItemStyle : {}]}>
@@ -30,7 +29,7 @@ class Dropdown extends Component {
     );
   }
   componentWillMount() {
-    const { defaultIndex, defaultValue } = this.props;
+    const { defaultIndex, defaultValue, user } = this.props;
     if (defaultValue) {
       this.setState({
         selectedItem: { id: defaultIndex, value: defaultValue },
@@ -83,7 +82,7 @@ const styles = {
     marginRight: 20,
   },
   dropdownStyle: {
-    height: 'auto',
+    height: 250,
     marginTop: 10,
   },
   dropdownRowStyle: {
@@ -93,7 +92,7 @@ const styles = {
     fontSize: 14,
   },
   highlightItemStyle: {
-    // backgroundColor: '#ccc',
+    backgroundColor: '#ccc',
   },
 };
 
