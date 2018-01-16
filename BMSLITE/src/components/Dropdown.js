@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { Text, View, TouchableHighlight, ListView, ScrollView } from 'react-native';
 import { Icon } from 'native-base';
 import { connect } from 'react-redux';
+import moment from 'moment';
+import { getConfigurationOverview } from '../actions/ConfigurationOverview';
+import { changeRouteId } from '../actions/changeRouteId';
 import ModalDropdown from 'react-native-modal-dropdown';
 class Dropdown extends Component {
   constructor(props) {
@@ -11,11 +14,31 @@ class Dropdown extends Component {
       data: {}
     };
   }
+  converDate = (date, day) => {
+    let Date = moment(date).utc();
+    let tomorrow = Date.add(day, 'days');
+    let tomorrowDate = moment(tomorrow).format("YYYY-MM-DD");
+    return tomorrowDate;
+  }
   onDropdownSelect(index, value) {
-    console.log('value==>', value);
     this.setState({
       selectedItem: { id: index, value: value }
     });
+    let user = this.props.responeLogin.user;
+    let token = this.props.responeLogin.token;
+    let fromDate = moment(this.props.responeGetDay, 'DD-MM-YYYY').format('YYYY-MM-DD');
+    let toDate = this.converDate(fromDate, 3);
+    let params = {
+      access_token: token,
+      company_id: user.data.CompId,
+      route_id: value[0],
+      from_date: fromDate,
+      to_date: toDate,
+      groups: 'selling_configs,fare_configs,statistic'
+    }
+    this.props.changeRouteId(value[0]);
+    console.log('onDropdownSelect params===>',params);
+   this.props.getConfigurationOverview(params);
   }
 
   renderRow(rowData,rowID, highlighted) {
@@ -93,7 +116,18 @@ const styles = {
 };
 const mapStateToProps = (state) => {
   return {
-    responeLogin: state.loginReducers
+    responeLogin: state.loginReducers,
+    responeGetDay: state.getDayReducers
   }
 };
-export default connect(mapStateToProps, null)(Dropdown);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getConfigurationOverview: (params) => {
+      dispatch(getConfigurationOverview(params));
+    },
+    changeRouteId: (route_id) => {
+      dispatch(changeRouteId(route_id));
+    }
+  };
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Dropdown);

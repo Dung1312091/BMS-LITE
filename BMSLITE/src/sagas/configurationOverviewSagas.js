@@ -5,6 +5,7 @@ import { Api } from '../utils/loginApi';
 import { put, takeLatest,call  } from 'redux-saga/effects';
 function* getConfigurationOverviewSagas(action) {
     try {
+        console.log('action.params==>',action.params);
         const response = yield Api.CallAPI('https://api-sandbox.vexere.com/v1/', 'configuration_overview', 'GET', action.params); 
         console.log('response==>',response);
         if (response.status === 200) {

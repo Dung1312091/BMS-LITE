@@ -14,6 +14,7 @@
     "prop-types": "^15.6.0",
     "react": "16.0.0",
     "react-native": "0.51.0",
+    "react-native-actionsheet": "^2.3.0",
     "react-native-animated-hide-view": "^1.0.0",
     "react-native-calendar": "^0.13.1",
     "react-native-calendars": "^1.16.1",

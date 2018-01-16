@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import ModalDropdown from 'react-native-modal-dropdown';
+import { StyleSheet, Text, View, TouchableOpacity, Modal, Button} from 'react-native';
+import {Calendar} from 'react-native-calendars';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -16,22 +17,13 @@ const styles = StyleSheet.create({
 });
 
 class TicketManagementScene extends React.Component {
-    componentWillMount() {
-        
-    }
-    render () {
-      console.log('TicketManagementScene');
-        return (
-            <View style={styles.container}>
-              <Text style={styles.welcome}>
-              TicketManagementScene
-              </Text>
-              <ModalDropdown options = {['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1']}>
-
-              </ModalDropdown>
-           </View>
-);
-}
+  render() {
+    return(
+      <Text>
+        AAA
+      </Text>
+    );
+  }
 }
 
 export default TicketManagementScene;

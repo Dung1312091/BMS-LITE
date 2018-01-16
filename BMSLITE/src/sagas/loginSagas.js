@@ -39,10 +39,6 @@ function*  LoginSagas(action) {
         else {
             yield put({ type: LOGIN_FAIL, error});
         }
-       
-        // yield put({ type: USER, data: token }); 
-        // let tk = yield getToken();
-        // console.warn('tk = ', tk);
     } catch (error) {  
         console.log('loi');      
         yield put({ type: LOGIN_FAIL, error});

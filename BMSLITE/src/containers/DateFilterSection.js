@@ -62,16 +62,16 @@ class DateFilterSection extends Component {
     );
   }
 }
-const mapStateToProps = (state) => {
-  return {
-      isDate: state.getDayReducers
-  }
-};
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getToday: () => {
-          dispatch(getToday());
-      }
-  };
-}
-export default connect(null,mapDispatchToProps)(DateFilterSection);
+// const mapStateToProps = (state) => {
+//   return {
+//       isDate: state.getDayReducers
+//   }
+// };
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     getToday: () => {
+//           dispatch(getToday());
+//       }
+//   };
+// }
+export default DateFilterSection;

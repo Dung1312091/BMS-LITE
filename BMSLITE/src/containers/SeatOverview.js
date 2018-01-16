@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { View, AsyncStorage } from 'react-native';
+import { View, AsyncStorage, TouchableOpacity } from 'react-native';
 import { Content, Text, Grid, Col, Button, CheckBox } from 'native-base';
+import ActionSheet from 'react-native-actionsheet';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import { getConfigurationOverview } from '../actions/ConfigurationOverview';
@@ -107,6 +108,9 @@ class SeatOverview extends Component {
     }
     return result;
   }
+  show =() => {
+    console.warn('ahihi');
+  }
   renderSeat(data) {
     const { columnStyle, columnTextStyle, seatOccupancyStyle } = styles;
     let total = null;
@@ -119,10 +123,9 @@ class SeatOverview extends Component {
       const id = i; // trip.id
       if (trip.isShow) {
         return (
-          <Col key={id} style={columnStyle}>
+          <Col key={id}   >
             <View style={[seatOccupancyStyle, SeatOverview.calculateSeatStyle(6,total)]} />
             <Text style={columnTextStyle}>{booking}/{total} chỗ</Text>
-            
           </Col>
         );
       }
@@ -131,7 +134,7 @@ class SeatOverview extends Component {
           <Col key={id} style={columnStyle}>
             {/* <View style={[seatOccupancyStyle, SeatOverview.calculateSeatStyle(trip)]} />
             <Text style={columnTextStyle}>{trip.bookedQty}/{trip.totalQty} chỗ</Text> */}
-            {/* <Text>AAAA</Text> */}
+            <Text>AAAA</Text>
           </Col>
         );
       }
@@ -150,55 +153,81 @@ class SeatOverview extends Component {
         </Grid>);
     });
   }
-  converDate = (date, day) => {
+  converDate (date, day) {
     let Date = moment(date).utc();
     let tomorrow = Date.add(day, 'days');
     let tomorrowDate = moment(tomorrow).format("YYYY-MM-DD");
     return tomorrowDate;
   }
-  setUpTimeData = (data) => {
-    let result = data[0].times.length;
-    data.forEach((item) => {
-       if (item.times.length > result) {
-        result = item;
-       }
-    });
-    return result;
-  }
-  setUpAllDataToRender = (times, dates) => {
+  setUpTime =(data) => {
+    let arr = [];
     let result = [];
-    times.times.forEach((time, i) => {
+    data.forEach((date, index) => {
+      date.times.forEach((time) => {
+        arr.push(time.time);
+      });
+    });
+    result = arr.filter(function(item, pos) {
+      return arr.indexOf(item) == pos;
+    })
+    return result.sort();
+  }
+  setUpAllDataToRender = (times, dates) => {  
+    let result = [];
+    times.forEach((time) => {
       let data = [];
-      dates.forEach((date,j) => {
+      dates.forEach((date) => {
         let type = {};
-        let arrTemp = [];
-        date.times.forEach((item, k) => {
-          if (item.time === time.time) {
+        date.times.forEach((item) => {
+          if(item.time === time) {
             type.isShow = true;
             type.configCustom = item.configs;
-
-            isTrue = true;
           }
         });
         data.push(type);
       });
-      time.data = data;
-      result.push(time);
+      result.push({
+        time: time,
+        data: data
+      });
     });
     return result;
   }
+  showActionSheet = () => {
+    console.warn('ahihi');
+    this.ActionSheet.show()
+  }
   render() {
     let response = this.props.responeGetConfigurationOverview;
-    if (Object.keys(response).length > 0) {
-      var trip_overview = response.data.trip_overview.dates;
-      var result = this.setUpTimeData(trip_overview);
-      var data = this.setUpAllDataToRender(result,trip_overview);
-    }
     var dates = moment(this.props.responeGetDay, 'DD-MM-YYYY').format('YYYY-MM-DD');
     var times = dates.times;
     let tomorrowDate = this.converDate(dates, 2);
     let nextTomorrowDate = this.converDate(dates, 3);
     let ListDates = [dates, tomorrowDate, nextTomorrowDate];
+    if (Object.keys(response).length > 0) {
+      var trip_overview = response.data.trip_overview.dates;
+      if (trip_overview.length < 3 && trip_overview.length > 0) {
+        for (let i = 0; i < ListDates.length; i ++ ) {
+          var count = 0;
+          for (let j = 0; j < trip_overview.length; j++) {
+            if (trip_overview[j].date !== ListDates[i]) {
+              count ++;
+            }
+          }
+          if (count === trip_overview.length) {
+            trip_overview.push({
+              date: ListDates[i],
+              times: []
+            });
+          }
+        }
+      }
+      trip_overview.sort(function(a,b) {return (a.date > b.date) ? 1 : ((b.date > a.date) ? -1 : 0);} ); 
+      var result = this.setUpTime(trip_overview);
+      var data = this.setUpAllDataToRender(result,trip_overview);
+    }
+    const options = [ 'Cancel', 'Apple', 'Banana', 'Watermelon', 'Durian' ];
+    const CANCEL_INDEX = 0
     const {
       containerStyle,
       tableStyle,
@@ -215,6 +244,11 @@ class SeatOverview extends Component {
         </Grid>
         <Content>
           {data ? this.renderDataGrid(data) : null}
+          <ActionSheet
+           options={options}
+           cancelButtonIndex={CANCEL_INDEX}
+          ref={o => this.ActionSheet = o}
+        />
         </Content>
       </View>
     );
